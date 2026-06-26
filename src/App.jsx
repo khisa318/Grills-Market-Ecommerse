@@ -1,122 +1,71 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useState, useEffect } from "react";
+import Home from "./pages/Home";
+import ProductDetail from "./pages/ProductDetail";
+import CategoryPage from "./pages/CategoryPage";
+import CheckOut from "./pages/CheckOut";
+import AuthPage from "./pages/AuthPage";
+import About from "./pages/About";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  // Simple layout tracking router state ('home', 'detail', 'category', 'checkout', 'auth', 'about')
+  const [currentScreen, setCurrentScreen] = useState("home");
+
+  // Quick listener to allow clicking your footer anchors (#about, #account, etc.) to jump screen states natively
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash === "#about") setCurrentScreen("about");
+      else if (hash === "#account" || hash === "#signin" || hash === "#register") setCurrentScreen("auth");
+      else if (hash === "#checkout") setCurrentScreen("checkout");
+      else if (hash.includes("grills") || hash.includes("smokers") || hash.includes("charcoal")) setCurrentScreen("category");
+    };
+
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  // Structural dynamic view switcher matrix
+  const renderCurrentPage = () => {
+    switch (currentScreen) {
+      case "home":
+        return <Home />;
+      case "detail":
+        return <ProductDetail />;
+      case "category":
+        return <CategoryPage />;
+      case "checkout":
+        return <CheckOut />;
+      case "auth":
+        return <AuthPage />;
+      case "about":
+        return <About />;
+      default:
+        return <Home />;
+    }
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="relative min-h-screen selection:bg-[#ff6b2b]/20">
+      
+      {/* 🛠️ QUICK DEVELOPMENT DEV BAR - Allows you to manually click and hop between pages instantly */}
+      <div className="fixed bottom-4 left-4 z-50 bg-[#1a110e] border border-white/10 px-3 py-2 rounded shadow-2xl flex items-center gap-2 text-[10px] text-white/70 font-sans tracking-wider uppercase font-bold">
+        <span className="text-[#ff6b2b]">Dev Controls:</span>
+        {["home", "detail", "category", "checkout", "auth", "about"].map((screen) => (
+          <button
+            key={screen}
+            onClick={() => setCurrentScreen(screen)}
+            className={`px-2 py-1 rounded transition-colors ${
+              currentScreen === screen ? "bg-[#ff6b2b] text-white" : "hover:bg-white/5 text-gray-400"
+            }`}
+          >
+            {screen}
+          </button>
+        ))}
+      </div>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      {/* Render the current tracked page component screen stack view */}
+      {renderCurrentPage()}
+      
+    </div>
+  );
 }
-
-export default App
