@@ -1,6 +1,6 @@
 import React from "react";
-import Navbar from "../componets/Navbar";
-import Footer from "../componets/Footer";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 
 export default function Contact() {
