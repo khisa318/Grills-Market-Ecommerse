@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../componets/Navbar";
-import Footer from "../componets/Footer";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { LogIn, UserPlus, Loader2 } from "lucide-react";
 
 export default function AuthPage() {
@@ -10,13 +10,12 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Captured Form Properties Matrix
+  // Form Field Tracking States
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
-  // Reset tracking alerts when switching forms
   const handleTabSwitch = (tab) => {
     setActiveTab(tab);
     setErrorMessage("");
@@ -46,14 +45,17 @@ export default function AuthPage() {
       }
 
       if (activeTab === "login") {
-        // Secure token allocation locally
+        // Store your session payloads securely
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         
-        // Push inside shop dashboard index
-        navigate("/shop");
+        // Immediate conditional navigation routing
+        if (data.user && (data.user.is_admin === true || data.user.is_admin === "true")) {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/account/profile");
+        }
       } else {
-        // Registration success pathway: flip down to sign in matrix automatically
         alert("Account created successfully! Let's sign you in.");
         setActiveTab("login");
         setErrorMessage("");
@@ -98,7 +100,6 @@ export default function AuthPage() {
 
           {/* FORM CONTAINER PANEL */}
           <div className="p-8">
-            {/* API SERVER EXCEPTION ROW ALERTS */}
             {errorMessage && (
               <div className="mb-5 bg-red-50 border border-red-200 text-red-600 text-xs font-medium px-4 py-2.5 rounded">
                 {errorMessage}
@@ -106,7 +107,6 @@ export default function AuthPage() {
             )}
 
             {activeTab === "login" ? (
-              /* SIGN IN FORM */
               <form onSubmit={handleAuthSubmit} className="space-y-5">
                 <div>
                   <label className="block text-[11px] font-bold uppercase text-gray-400 tracking-wider mb-1.5">
@@ -156,7 +156,6 @@ export default function AuthPage() {
                 </button>
               </form>
             ) : (
-              /* ACCOUNT REGISTRATION FORM */
               <form onSubmit={handleAuthSubmit} className="space-y-5">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
