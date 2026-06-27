@@ -1,30 +1,29 @@
 import os
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from app.models import db
+
+db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)
     
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'pitmaster-fallback-encryption-string')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///grills.db')
+    # Enable CORS for all routes under /api/ with flexible resource headers
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, '..', 'grills.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev_secret_key_123')
+
     db.init_app(app)
-    
-    # Register Route Blueprints
-    from app.routes.auth import auth_bp
+
+    # 1. Register Products Blueprint
     from app.routes.products import products_bp
-    from app.routes.admin import admin_bp
-    from app.routes.payments import payments_bp
-    
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(products_bp)
-    app.register_blueprint(admin_bp)
-    app.register_blueprint(payments_bp)
-    
-    with app.app_context():
-        db.create_all()
-    
+    app.register_blueprint(products_bp, url_prefix='/api')
+
+    # 2. Make sure your Auth Blueprint is registered here!
+    from app.routes.auth import auth_bp
+    app.register_blueprint(auth_bp, url_prefix='/api')
+
     return app

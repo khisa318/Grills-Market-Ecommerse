@@ -30,3 +30,12 @@ node_modules/
 dist/
 build/
 .DS_Store
+
+
+# Ignore python compilation caches
+__pycache__/
+*.pyc
+
+# Ignore local database states and instances
+backend/grills.db
+backend/instance/
