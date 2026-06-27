@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Navbar from "../componets/Navbar";
-import Footer from "../componets/Footer";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
 
 export default function FAQ() {
