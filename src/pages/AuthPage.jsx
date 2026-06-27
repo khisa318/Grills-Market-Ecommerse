@@ -1,10 +1,69 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../componets/Navbar";
 import Footer from "../componets/Footer";
-import { LogIn, UserPlus } from "lucide-react";
+import { LogIn, UserPlus, Loader2 } from "lucide-react";
 
 export default function AuthPage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("login"); // "login" or "register"
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // Captured Form Properties Matrix
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+
+  // Reset tracking alerts when switching forms
+  const handleTabSwitch = (tab) => {
+    setActiveTab(tab);
+    setErrorMessage("");
+  };
+
+  const handleAuthSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMessage("");
+
+    const endpoint = activeTab === "login" ? "/api/auth/login" : "/api/auth/register";
+    const payload = activeTab === "login" 
+      ? { email, password } 
+      : { email, password, firstName, lastName };
+
+    try {
+      const response = await fetch(`http://localhost:5000${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "An authentication fault occurred.");
+      }
+
+      if (activeTab === "login") {
+        // Secure token allocation locally
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        
+        // Push inside shop dashboard index
+        navigate("/shop");
+      } else {
+        // Registration success pathway: flip down to sign in matrix automatically
+        alert("Account created successfully! Let's sign you in.");
+        setActiveTab("login");
+        setErrorMessage("");
+      }
+    } catch (err) {
+      setErrorMessage(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fbf7f4] font-sans text-[#1a110e]">
@@ -16,7 +75,7 @@ export default function AuthPage() {
           {/* TAB HEADERS CONTROLLER */}
           <div className="flex border-b border-gray-100 bg-[#fbf7f4]">
             <button
-              onClick={() => setActiveTab("login")}
+              onClick={() => handleTabSwitch("login")}
               className={`flex-1 py-4 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 ${
                 activeTab === "login"
                   ? "bg-white border-[#ff6b2b] text-[#1a110e]"
@@ -26,7 +85,7 @@ export default function AuthPage() {
               Sign In
             </button>
             <button
-              onClick={() => setActiveTab("register")}
+              onClick={() => handleTabSwitch("register")}
               className={`flex-1 py-4 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 ${
                 activeTab === "register"
                   ? "bg-white border-[#ff6b2b] text-[#1a110e]"
@@ -39,9 +98,16 @@ export default function AuthPage() {
 
           {/* FORM CONTAINER PANEL */}
           <div className="p-8">
+            {/* API SERVER EXCEPTION ROW ALERTS */}
+            {errorMessage && (
+              <div className="mb-5 bg-red-50 border border-red-200 text-red-600 text-xs font-medium px-4 py-2.5 rounded">
+                {errorMessage}
+              </div>
+            )}
+
             {activeTab === "login" ? (
               /* SIGN IN FORM */
-              <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
+              <form onSubmit={handleAuthSubmit} className="space-y-5">
                 <div>
                   <label className="block text-[11px] font-bold uppercase text-gray-400 tracking-wider mb-1.5">
                     Email Address
@@ -49,6 +115,8 @@ export default function AuthPage() {
                   <input
                     type="email"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full bg-[#fbf7f4] border border-gray-300 rounded p-2.5 text-sm focus:outline-none focus:border-[#ff6b2b]"
                     placeholder="your@email.com"
                   />
@@ -66,6 +134,8 @@ export default function AuthPage() {
                   <input
                     type="password"
                     required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="w-full bg-[#fbf7f4] border border-gray-300 rounded p-2.5 text-sm focus:outline-none focus:border-[#ff6b2b]"
                     placeholder="••••••••"
                   />
@@ -73,14 +143,21 @@ export default function AuthPage() {
 
                 <button
                   type="submit"
-                  className="w-full bg-[#1a110e] text-white text-xs font-bold uppercase tracking-widest py-3.5 rounded hover:bg-[#ff6b2b] transition duration-150 flex items-center justify-center gap-2 mt-2"
+                  disabled={loading}
+                  className="w-full bg-[#1a110e] text-white text-xs font-bold uppercase tracking-widest py-3.5 rounded hover:bg-[#ff6b2b] transition duration-150 flex items-center justify-center gap-2 mt-2 disabled:bg-gray-400"
                 >
-                  <LogIn className="size-4" /> Sign In
+                  {loading ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <>
+                      <LogIn className="size-4" /> Sign In
+                    </>
+                  )}
                 </button>
               </form>
             ) : (
               /* ACCOUNT REGISTRATION FORM */
-              <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
+              <form onSubmit={handleAuthSubmit} className="space-y-5">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[11px] font-bold uppercase text-gray-400 tracking-wider mb-1.5">
@@ -89,6 +166,8 @@ export default function AuthPage() {
                     <input
                       type="text"
                       required
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
                       className="w-full bg-[#fbf7f4] border border-gray-300 rounded p-2.5 text-sm focus:outline-none focus:border-[#ff6b2b]"
                     />
                   </div>
@@ -99,6 +178,8 @@ export default function AuthPage() {
                     <input
                       type="text"
                       required
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
                       className="w-full bg-[#fbf7f4] border border-gray-300 rounded p-2.5 text-sm focus:outline-none focus:border-[#ff6b2b]"
                     />
                   </div>
@@ -111,6 +192,8 @@ export default function AuthPage() {
                   <input
                     type="email"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full bg-[#fbf7f4] border border-gray-300 rounded p-2.5 text-sm focus:outline-none focus:border-[#ff6b2b]"
                     placeholder="your@email.com"
                   />
@@ -123,6 +206,8 @@ export default function AuthPage() {
                   <input
                     type="password"
                     required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="w-full bg-[#fbf7f4] border border-gray-300 rounded p-2.5 text-sm focus:outline-none focus:border-[#ff6b2b]"
                     placeholder="Minimum 8 characters"
                   />
@@ -134,9 +219,16 @@ export default function AuthPage() {
 
                 <button
                   type="submit"
-                  className="w-full bg-[#ff6b2b] text-white text-xs font-bold uppercase tracking-widest py-3.5 rounded hover:bg-[#e05316] transition duration-150 flex items-center justify-center gap-2 mt-2"
+                  disabled={loading}
+                  className="w-full bg-[#ff6b2b] text-white text-xs font-bold uppercase tracking-widest py-3.5 rounded hover:bg-[#e05316] transition duration-150 flex items-center justify-center gap-2 mt-2 disabled:bg-gray-400"
                 >
-                  <UserPlus className="size-4" /> Create Account
+                  {loading ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <>
+                      <UserPlus className="size-4" /> Create Account
+                    </>
+                  )}
                 </button>
               </form>
             )}
