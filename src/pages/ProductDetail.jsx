@@ -1,132 +1,168 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import Navbar from "../componets/Navbar";
 import Footer from "../componets/Footer";
-import { Star, Shield, Truck, RefreshCw, Minus, Plus } from "lucide-react";
+import { api } from "../data/api";
+import { Star, Shield, Truck, Flame, ArrowLeft, Plus, Minus } from "lucide-react";
 
 export default function ProductDetail() {
+  const { id } = useParams(); // Extracts the slug directly from your route configuration
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
-  // Focus product details matching your flagship lineup
-  const product = {
-    brand: "TRAEGER",
-    name: "Traeger Pro 575 Wood Pellet Grill",
-    price: 899.99,
-    reviewCount: 124,
-    description: "The world's best-selling pellet grill just got better. The Traeger Pro 575 redefines backyard cooking with the D2 direct drive powertrain for faster heating and ultra-precise smoke levels. Control your grill anytime, anywhere using WiFIRE technology via the Traeger app.",
-    specs: [
-      { label: "Cooking Capacity", value: "575 sq. in." },
-      { label: "Temperature Range", value: "180°F to 500°F" },
-      { label: "Connectivity", value: "WiFIRE Enabled" },
-      { label: "Hopper Capacity", value: "18 lbs." },
-      { label: "Fuel Source", value: "All-Natural Wood Pellets" },
-      { label: "Warranty", value: "3-Year Limited" }
-    ],
-    imageUrl: "https://images.unsplash.com/photo-1614332287897-cdc485fa562d?auto=format&fit=crop&w=600&q=80"
-  };
+  useEffect(() => {
+    setLoading(true);
+    api.getProductBySlug(id)
+      .then((data) => {
+        setProduct(data);
+        setError(null);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("We couldn't locate this piece of cooking equipment.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [id]);
 
-  const handleIncrement = () => setQuantity(prev => prev + 1);
-  const handleDecrement = () => setQuantity(prev => prev > 1 ? prev - 1 : 1);
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#fbf7f4] font-sans text-[#1a110e]">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center text-xs font-bold uppercase tracking-widest text-gray-400">
+          Reading firebox telemetry...
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#fbf7f4] font-sans text-[#1a110e]">
+        <Navbar />
+        <div className="flex-1 flex flex-col items-center justify-center p-4 text-center">
+          <p className="text-sm font-bold text-red-500 uppercase tracking-wider mb-2">{error || "Product Not Found"}</p>
+          <Link to="/shop" className="text-xs font-bold text-[#ff6b2b] uppercase tracking-widest flex items-center gap-1 hover:underline">
+            <ArrowLeft className="size-3" /> Back to Catalog
+          </Link>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fbf7f4]">
+    <div className="min-h-screen flex flex-col bg-[#fbf7f4] font-sans text-[#1a110e]">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 w-full py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+      <main className="flex-1 max-w-7xl mx-auto px-4 w-full py-8 md:py-12">
+        {/* BREADCRUMB ANCHOR */}
+        <div className="mb-6">
+          <Link to="/shop" className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5 hover:text-[#1a110e] transition">
+            <ArrowLeft className="size-3" /> Back to Premium Catalog
+          </Link>
+        </div>
+
+        {/* TWO COLUMN GRID DETAILS */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
-          {/* LEFT: PRODUCT IMAGE WINDOW */}
-          <div className="bg-white border border-gray-200/60 p-8 rounded flex items-center justify-center min-h-[400px] md:min-h-[500px]">
+          {/* LEFT COLUMN: HERO IMAGE STAGE (7 Columns) */}
+          <div className="lg:col-span-7 bg-white border border-gray-200 rounded p-6 shadow-sm flex justify-center items-center">
             <img 
               src={product.imageUrl} 
               alt={product.name} 
-              className="object-contain max-h-[400px] w-full"
+              className="max-h-[480px] w-auto object-contain rounded"
             />
           </div>
 
-          {/* RIGHT: PRODUCT INFO & PURCHASE CONTROLS */}
-          <div className="flex flex-col">
-            <span className="text-xs font-bold tracking-[0.2em] text-[#ff6b2b] uppercase mb-2">
-              {product.brand}
-            </span>
-            <h1 className="font-serif text-3xl md:text-4xl font-medium text-[#1a110e] leading-tight mb-3">
-              {product.name}
-            </h1>
+          {/* RIGHT COLUMN: INTERACTIVE SPECS MATRIX (5 Columns) */}
+          <div className="lg:col-span-5 space-y-6">
+            <div>
+              {product.tag && (
+                <span className="inline-block bg-[#ff6b2b]/10 text-[#ff6b2b] text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded mb-2">
+                  {product.tag}
+                </span>
+              )}
+              <span className="text-[11px] font-bold tracking-widest text-gray-400 uppercase block mb-1">
+                {product.brand}
+              </span>
+              <h1 className="font-serif text-2xl md:text-3xl font-medium tracking-tight leading-tight">
+                {product.name}
+              </h1>
+            </div>
 
-            {/* Ratings Summary */}
-            <div className="flex items-center gap-2 mb-6">
-              <div className="flex items-center text-[#ff6b2b]">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="size-4 fill-current" strokeWidth={0} />
+            {/* RATINGS STRIP */}
+            <div className="flex items-center gap-4 text-xs border-b border-gray-100 pb-4">
+              <div className="flex items-center gap-0.5 text-[#ff6b2b]">
+                {[...Array(product.rating)].map((_, i) => (
+                  <Star key={i} className="size-3.5 fill-current" />
                 ))}
               </div>
-              <span className="text-xs text-gray-500 font-medium">
-                {product.reviewCount} customer reviews
-              </span>
+              <span className="text-gray-400 font-medium">({product.reviewCount} verified reviews)</span>
             </div>
 
-            {/* Price Frame */}
-            <div className="text-3xl font-bold text-[#1a110e] mb-6">
-              ${product.price.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+            {/* PRICE BAR */}
+            <div className="text-3xl font-serif font-medium text-[#1a110e]">
+              ${product.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
 
-            {/* Core Description Block */}
-            <p className="text-sm text-gray-600 leading-relaxed mb-8">
+            {/* DESCRIPTION EXCERPT */}
+            <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
               {product.description}
             </p>
 
-            {/* Quantity Selector and Add Button */}
-            <div className="flex flex-col sm:flex-row items-stretch gap-4 pb-8 border-b border-gray-200">
-              <div className="flex items-center justify-between border border-gray-300 rounded bg-white h-12 px-2 sm:w-32">
-                <button 
-                  onClick={handleDecrement}
-                  className="p-1 text-gray-500 hover:text-[#1a110e] transition"
-                >
-                  <Minus className="size-4" />
-                </button>
-                <span className="text-sm font-bold text-[#1a110e] w-8 text-center select-none">
-                  {quantity}
-                </span>
-                <button 
-                  onClick={handleIncrement}
-                  className="p-1 text-gray-500 hover:text-[#1a110e] transition"
-                >
-                  <Plus className="size-4" />
-                </button>
-              </div>
-
-              <button className="flex-1 bg-[#ff6b2b] text-white text-xs font-bold uppercase tracking-wider h-12 px-8 rounded hover:bg-[#e05316] transition shadow-sm">
-                Add to Basket
-              </button>
-            </div>
-
-            {/* Trust Badges Slat */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-6 border-b border-gray-200 text-xs text-gray-600">
-              <div className="flex items-center gap-2.5">
-                <Truck className="size-4 text-[#ff6b2b] shrink-0" />
-                <span>Free Freight Delivery</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <Shield className="size-4 text-[#ff6b2b] shrink-0" />
-                <span>Authorized Dealer</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <RefreshCw className="size-4 text-[#ff6b2b] shrink-0" />
-                <span>30-Day Hassle Returns</span>
-              </div>
-            </div>
-
-            {/* Specifications List */}
-            <div className="pt-8">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#1a110e] mb-4">
-                Technical Specifications
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-                {product.specs.map((spec, idx) => (
-                  <div key={idx} className="flex justify-between border-b border-gray-100 pb-2 text-xs">
-                    <span className="text-gray-400 font-medium">{spec.label}</span>
-                    <span className="text-[#1a110e] font-bold">{spec.value}</span>
-                  </div>
+            {/* TECHNICAL COMPONENT FEATURE BADGES */}
+            <div className="space-y-2">
+              <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Engineered Specifications:</h3>
+              <div className="flex flex-wrap gap-1.5">
+                {product.features.map((feature, i) => (
+                  <span key={i} className="bg-white border border-gray-200 px-2.5 py-1 rounded text-xs text-gray-600 font-medium flex items-center gap-1 shadow-sm">
+                    <Flame className="size-3 text-[#ff6b2b]" /> {feature}
+                  </span>
                 ))}
+              </div>
+            </div>
+
+            {/* INTERACTIVE ACTIONS LAYOUT PANEL */}
+            <div className="pt-4 border-t border-gray-100 space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center border border-gray-300 rounded bg-white">
+                  <button 
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="p-2.5 hover:text-[#ff6b2b] transition"
+                  >
+                    <Minus className="size-3.5" />
+                  </button>
+                  <span className="w-10 text-center font-bold text-sm text-[#1a110e] select-none">
+                    {quantity}
+                  </span>
+                  <button 
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="p-2.5 hover:text-[#ff6b2b] transition"
+                  >
+                    <Plus className="size-3.5" />
+                  </button>
+                </div>
+
+                <button className="flex-1 bg-[#1a110e] text-white text-xs font-bold uppercase tracking-widest py-3.5 rounded hover:bg-[#ff6b2b] transition shadow-md">
+                  Add To Smoking Inventory
+                </button>
+              </div>
+
+              {/* FREIGHT TRUST SLATS */}
+              <div className="bg-white border border-gray-200/60 rounded p-4 space-y-3 text-[11px] text-gray-500">
+                <div className="flex gap-2.5 items-start">
+                  <Truck className="size-4 text-[#ff6b2b] shrink-0 mt-0.5" />
+                  <p><strong className="text-[#1a110e]">Insured Curbside Delivery:</strong> Out of dock within 48 hours. Lift-gate carrier coordinates direct drops.</p>
+                </div>
+                <div className="flex gap-2.5 items-start border-t border-gray-100 pt-3">
+                  <Shield className="size-4 text-[#ff6b2b] shrink-0 mt-0.5" />
+                  <p><strong className="text-[#1a110e]">Authorized Dealer Warranty:</strong> Direct structural assembly coverage passes straight to your household invoice tracking profile.</p>
+                </div>
               </div>
             </div>
 
