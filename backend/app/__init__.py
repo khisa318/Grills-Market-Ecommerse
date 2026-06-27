@@ -8,7 +8,7 @@ def create_app():
     CORS(app)
     
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'pitmaster-fallback-encryption-string')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///../grills.db')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///grills.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     db.init_app(app)
