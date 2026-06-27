@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { Link, useNavigate } from "react-router-dom";
-import Navbar from "../componets/Navbar";
-import Footer from "../componets/Footer";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { CreditCard, Truck, ShieldCheck, ShoppingBag, ArrowLeft } from "lucide-react";
 
 export default function CheckOut() {

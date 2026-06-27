@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../componets/Navbar";
-import Footer from "../componets/Footer";
-import ProductCard from "../componets/ProductCard";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import ProductCard from "../components/ProductCard";
 import { api } from "../data/api"; // <-- Import your fresh api instance here
 import { SlidersHorizontal, Grid, List } from "lucide-react";
 

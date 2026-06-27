@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import Navbar from "../componets/Navbar";
-import Footer from "../componets/Footer";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { api } from "../data/api";
 import { useCart } from "../context/CartContext";
 import { Star, Shield, Truck, Flame, ArrowLeft, Plus, Minus } from "lucide-react";

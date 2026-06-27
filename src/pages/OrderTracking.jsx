@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Navbar from "../componets/Navbar";
-import Footer from "../componets/Footer";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { ShieldAlert, Package, Truck, CheckCircle2, Search, Sliders } from "lucide-react";
 
 export default function OrderTracking() {

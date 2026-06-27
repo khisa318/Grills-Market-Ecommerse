@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import Navbar from "../componets/Navbar";
-import Footer from "../componets/Footer";
-import ProductCard from "../componets/ProductCard";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import ProductCard from "../components/ProductCard";
 import { api } from "../data/api";
 import { Search, Loader2 } from "lucide-react";
 
