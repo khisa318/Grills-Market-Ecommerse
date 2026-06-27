@@ -3,10 +3,13 @@ import { useParams, Link } from "react-router-dom";
 import Navbar from "../componets/Navbar";
 import Footer from "../componets/Footer";
 import { api } from "../data/api";
+import { useCart } from "../context/CartContext";
 import { Star, Shield, Truck, Flame, ArrowLeft, Plus, Minus } from "lucide-react";
 
 export default function ProductDetail() {
-  const { id } = useParams(); // Extracts the slug directly from your route configuration
+  const { id } = useParams(); 
+  const { addToCart } = useCart();
+  
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,7 +48,9 @@ export default function ProductDetail() {
       <div className="min-h-screen flex flex-col bg-[#fbf7f4] font-sans text-[#1a110e]">
         <Navbar />
         <div className="flex-1 flex flex-col items-center justify-center p-4 text-center">
-          <p className="text-sm font-bold text-red-500 uppercase tracking-wider mb-2">{error || "Product Not Found"}</p>
+          <p className="text-sm font-bold text-red-500 uppercase tracking-wider mb-2">
+            {error || "Product Not Found"}
+          </p>
           <Link to="/shop" className="text-xs font-bold text-[#ff6b2b] uppercase tracking-widest flex items-center gap-1 hover:underline">
             <ArrowLeft className="size-3" /> Back to Catalog
           </Link>
@@ -117,9 +122,11 @@ export default function ProductDetail() {
 
             {/* TECHNICAL COMPONENT FEATURE BADGES */}
             <div className="space-y-2">
-              <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Engineered Specifications:</h3>
+              <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                Engineered Specifications:
+              </h3>
               <div className="flex flex-wrap gap-1.5">
-                {product.features.map((feature, i) => (
+                {product.features && product.features.map((feature, i) => (
                   <span key={i} className="bg-white border border-gray-200 px-2.5 py-1 rounded text-xs text-gray-600 font-medium flex items-center gap-1 shadow-sm">
                     <Flame className="size-3 text-[#ff6b2b]" /> {feature}
                   </span>
@@ -148,7 +155,10 @@ export default function ProductDetail() {
                   </button>
                 </div>
 
-                <button className="flex-1 bg-[#1a110e] text-white text-xs font-bold uppercase tracking-widest py-3.5 rounded hover:bg-[#ff6b2b] transition shadow-md">
+                <button 
+                  onClick={() => addToCart(product, quantity)}
+                  className="flex-1 bg-[#1a110e] text-white text-xs font-bold uppercase tracking-widest py-3.5 rounded hover:bg-[#ff6b2b] transition shadow-md"
+                >
                   Add To Smoking Inventory
                 </button>
               </div>
