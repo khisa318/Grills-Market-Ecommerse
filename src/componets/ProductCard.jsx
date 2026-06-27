@@ -2,17 +2,25 @@ import React from "react";
 import { Star } from "lucide-react";
 
 export default function ProductCard({ product }) {
+  // 1. Map backend snake_case properties and set fallbacks for missing fields
   const {
+    id,
+    slug,
     name,
     brand,
     price,
     tag,
-    rating,
-    reviewCount,
     description,
-    features,
-    imageUrl,
+    features,      // This arrives from Flask as a string
+    image_url,     // Mapped from backend snake_case key
+    rating = 5,    // Fallback default value if missing
+    reviewCount = 12 // Fallback default value if missing
   } = product;
+
+  // 2. Parse features safely. If it's a string, split it by commas. If empty, fall back to an array.
+  const featureArray = typeof features === "string" 
+    ? features.split(",").map(f => f.trim()) 
+    : Array.isArray(features) ? features : [];
 
   return (
     <div className="bg-white border border-gray-200/60 flex flex-col h-full relative group hover:shadow-md transition-shadow duration-200">
@@ -29,7 +37,7 @@ export default function ProductCard({ product }) {
       {/* 2. PRODUCT IMAGE FRAME */}
       <div className="p-6 bg-white flex items-center justify-center min-h-[240px] max-h-[240px] overflow-hidden border-b border-gray-100">
         <img
-          src={imageUrl}
+          src={image_url} // Used corrected backend property variable name
           alt={name}
           className="object-contain max-h-[200px] w-full transform group-hover:scale-102 transition-transform duration-200"
         />
@@ -70,19 +78,21 @@ export default function ProductCard({ product }) {
         </p>
 
         {/* Technical Data Columns Grid Layout */}
-        <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[11px] text-gray-600 font-medium border-t border-gray-100 pt-4 mb-6">
-          {features.map((feature, idx) => (
-            <div key={idx} className="flex items-center gap-1.5 truncate">
-              <span className="size-1 bg-[#ff6b2b] rounded-full shrink-0" />
-              <span className="truncate">{feature}</span>
-            </div>
-          ))}
-        </div>
+        {featureArray.length > 0 && (
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[11px] text-gray-600 font-medium border-t border-gray-100 pt-4 mb-6">
+            {featureArray.map((feature, idx) => (
+              <div key={idx} className="flex items-center gap-1.5 truncate">
+                <span className="size-1 bg-[#ff6b2b] rounded-full shrink-0" />
+                <span className="truncate" title={feature}>{feature}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* 4. PRICE & ACTION FOOTER ROW */}
         <div className="mt-auto pt-2 flex items-center justify-between gap-2">
           <div className="text-xl font-bold text-[#1a110e]">
-            ${price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            ${price ? price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}
           </div>
           
           <button className="bg-[#1a110e] text-white hover:bg-[#ff6b2b] text-[11px] font-bold uppercase tracking-wider px-3.5 py-2 rounded-sm transition flex items-center gap-1 shrink-0">
