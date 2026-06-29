@@ -107,7 +107,7 @@ export default function ProductDetail() {
                   <Star key={i} className="size-3.5 fill-current" />
                 ))}
               </div>
-              <span className="text-gray-400 font-medium">({product.reviewCount} verified reviews)</span>
+              <span className="text-gray-4                                                                                                                                                                                  00 font-medium">({product.reviewCount} verified reviews)</span>
             </div>
 
             {/* PRICE BAR */}
