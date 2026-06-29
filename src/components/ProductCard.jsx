@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Star } from "lucide-react";
 import { useCart } from "../context/CartContext"; // <-- Direct import to access global state management
 
 export default function ProductCard({ product }) {
   // 1. Map backend snake_case properties
-  const {
-    id,
-    slug,
+  const { 
     name,
     brand,
     price,
@@ -14,7 +12,7 @@ export default function ProductCard({ product }) {
     description,
     features,      
     image_url,     
-    rating = 5,    
+
     reviewCount = 12 
   } = product;
 
@@ -53,7 +51,7 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <div className="bg-white border border-gray-200/60 flex flex-col h-full relative group hover:shadow-md transition-shadow duration-200">
+    <div className="bg-white border border-gray-200/70 flex flex-col h-full relative group transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:border-[#ff6b2b]/30">
       
       {/* TOP METADATA BADGE TAG */}
       {tag && (
@@ -65,11 +63,12 @@ export default function ProductCard({ product }) {
       )}
 
       {/* PRODUCT IMAGE FRAME */}
-      <div className="p-6 bg-white flex items-center justify-center min-h-[240px] max-h-[240px] overflow-hidden border-b border-gray-100">
+      <div className="p-5 bg-gradient-to-b from-[#ff6b2b]/10 via-white to-white flex items-center justify-center min-h-[240px] max-h-[240px] overflow-hidden border-b border-gray-100 relative">
+        <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity bg-[radial-gradient(circle_at_top,rgba(255,107,43,0.35),transparent_45%)]" />
         <img
           src={image_url}
           alt={name}
-          className="object-contain max-h-[200px] w-full transform group-hover:scale-102 transition-transform duration-200"
+          className="relative z-10 object-contain max-h-[200px] w-full transform group-hover:scale-[1.08] group-hover:rotate-[0.15deg] transition-transform duration-300"
         />
       </div>
 
@@ -82,7 +81,7 @@ export default function ProductCard({ product }) {
         </span>
 
         {/* Product Title */}
-        <h4 className="font-serif text-lg font-medium text-[#1a110e] leading-tight mb-2 min-h-[44px] line-clamp-2">
+        <h4 className="text-lg font-semibold text-[#1a110e] leading-tight mb-2 min-h-[44px] line-clamp-2 tracking-tight">
           {name}
         </h4>
 
@@ -120,7 +119,7 @@ export default function ProductCard({ product }) {
         )}
 
         {/* PRICE & ACTION FOOTER ROW */}
-        <div className="mt-auto pt-2 flex items-center justify-between gap-2">
+        <div className="mt-auto pt-3 flex items-center justify-between gap-2">
           <div className="text-xl font-bold text-[#1a110e]">
             ${price ? price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}
           </div>
@@ -128,19 +127,22 @@ export default function ProductCard({ product }) {
           <button 
             onClick={handleAddClick}
             disabled={isAdding}
-            className={`text-[11px] font-bold uppercase tracking-wider px-3.5 py-2 rounded-sm transition flex items-center gap-1 shrink-0 ${
+            className={`text-[12px] font-extrabold uppercase tracking-[0.08em] px-3.5 py-2 rounded-lg transition flex items-center gap-1 shrink-0 shadow-sm border border-transparent ${
               isAdded 
-                ? "bg-green-600 text-white cursor-default" 
-                : "bg-[#1a110e] text-white hover:bg-[#ff6b2b]"
-            } disabled:opacity-75`}
+                ? "bg-green-600 text-white cursor-default border-green-700/40"
+                : "bg-[#1a110e] text-white hover:bg-[#ff6b2b] hover:border-[#ff6b2b]/40" 
+            } disabled:opacity-75 ${isAdded ? "animate-[fadeInScale_320ms_ease-out]" : ""}`}
           >
             {isAdding ? (
               <span>Adding...</span>
             ) : isAdded ? (
-              <span>Added! ✓</span>
+              <span className="inline-flex items-center gap-1">
+                <span>Added!</span>
+                <span className="font-black">✓</span>
+              </span>
             ) : (
               <>
-                <span>+</span>
+                <span className="font-black">+</span>
                 <span>ADD</span>
               </>
             )}
@@ -152,3 +154,26 @@ export default function ProductCard({ product }) {
     </div>
   );
 }
+
+// Local keyframes for the "Added" micro-animation (keeps performance high)
+const style = `
+  @keyframes fadeInScale {
+    0% { opacity: 0.0; transform: translateY(3px) scale(0.98); }
+    60% { opacity: 1; transform: translateY(0) scale(1.02); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+`;
+
+// Inject keyframes once via a React-friendly <style> tag.
+// (Placed at the bottom so it doesn't disturb layout.)
+export function ProductCardStyleKeys() {
+  return <style>{style}</style>;
+}
+
+// NOTE: Keep this file free of top-level JSX/style injection.
+// Render <ProductCardStyleKeys /> once from a top-level page (e.g., Home).
+
+
+
+
+
