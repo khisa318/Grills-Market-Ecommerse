@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [cart, setCart] = useState(() => {
     // Read initial cart configuration cache straight from localStorage
     const savedCart = localStorage.getItem("ember_iron_cart");
@@ -58,6 +59,8 @@ export function CartProvider({ children }) {
         clearCart,
         cartCount,
         cartSubtotal,
+        isCartOpen,
+        setIsCartOpen,
       }}
     >
       {children}

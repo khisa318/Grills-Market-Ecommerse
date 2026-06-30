@@ -47,6 +47,7 @@ export default function AuthPage() {
       if (activeTab === "login") {
         // Store your session payloads securely
         localStorage.setItem("token", data.token);
+        localStorage.setItem("authToken", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         
         // Immediate conditional navigation routing

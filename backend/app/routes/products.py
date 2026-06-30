@@ -6,6 +6,15 @@ from sqlalchemy import or_
 
 products_bp = Blueprint('products_bp', __name__)
 
+
+@products_bp.after_request
+def add_product_cache_headers(response):
+    """Allow browsers and CDNs to briefly cache public catalog reads."""
+    if request.method == 'GET' and response.status_code == 200:
+        response.headers['Cache-Control'] = 'public, max-age=300, stale-while-revalidate=60'
+    return response
+
+
 @products_bp.route('/products', methods=['GET'])
 def get_products():
     """Get all products with filtering, sorting, and pagination."""

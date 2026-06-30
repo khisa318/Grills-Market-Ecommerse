@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { api } from "../data/api";
 import { Flame, Users, CreditCard, ShoppingBag, Plus, Trash2 } from "lucide-react";
 

@@ -69,6 +69,7 @@ def create_app():
     from app.routes.wishlist import wishlist_bp
     from app.routes.cart import cart_bp
     from app.routes.admin import admin_bp
+    from app.routes.payments import payments_bp
     
     app.register_blueprint(products_bp, url_prefix='/api')
     app.register_blueprint(auth_bp, url_prefix='/api')
@@ -77,6 +78,7 @@ def create_app():
     app.register_blueprint(wishlist_bp, url_prefix='/api')
     app.register_blueprint(cart_bp, url_prefix='/api')
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
+    app.register_blueprint(payments_bp, url_prefix='/api')
 
     # Create tables
     with app.app_context():

@@ -117,12 +117,10 @@ export default function Navbar() {
           <div className="max-w-7xl mx-auto px-4">
             <nav className="flex items-center gap-8 text-sm font-medium uppercase tracking-wider text-white py-3.5">
               <Link to="/" className="text-[#ff6b2b]">Home</Link>
-              <Link to="/shop?category=gas" className="hover:text-[#ff6b2b] transition">Gas Grills</Link>
-              <Link to="/shop?category=charcoal" className="hover:text-[#ff6b2b] transition">Charcoal</Link>
-              <Link to="/shop?category=pellet" className="hover:text-[#ff6b2b] transition">Pellet</Link>
-              <Link to="/shop?category=smokers" className="hover:text-[#ff6b2b] transition">Smokers</Link>
-              <Link to="/shop?category=kamado" className="hover:text-[#ff6b2b] transition">Kamado</Link>
-              <Link to="/shop?category=accessories" className="hover:text-[#ff6b2b] transition">Accessories</Link>
+              <Link to="/shop?category=Pellet%20Grills" className="hover:text-[#ff6b2b] transition">Pellet Grills</Link>
+              <Link to="/shop?category=Kamado%20Grills" className="hover:text-[#ff6b2b] transition">Kamado</Link>
+              <Link to="/shop?category=Fuel" className="hover:text-[#ff6b2b] transition">Fuel</Link>
+              <Link to="/shop" className="hover:text-[#ff6b2b] transition">All Products</Link>
               <Link to="/about" className="hover:text-[#ff6b2b] transition">About</Link>
               <Link to="/contact" className="hover:text-[#ff6b2b] transition">Contact</Link>
             </nav>
@@ -146,8 +144,9 @@ export default function Navbar() {
             </form>
             <nav className="flex flex-col gap-4 text-sm font-medium uppercase tracking-wider text-gray-700">
               <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="text-[#ff6b2b]">Home</Link>
-              <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)}>Gas Grills</Link>
-              <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)}>Smokers</Link>
+              <Link to="/shop?category=Pellet%20Grills" onClick={() => setIsMobileMenuOpen(false)}>Pellet Grills</Link>
+              <Link to="/shop?category=Kamado%20Grills" onClick={() => setIsMobileMenuOpen(false)}>Kamado</Link>
+              <Link to="/shop?category=Fuel" onClick={() => setIsMobileMenuOpen(false)}>Fuel</Link>
               <Link to="/about" onClick={() => setIsMobileMenuOpen(false)}>Our Story</Link>
               <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>
             </nav>

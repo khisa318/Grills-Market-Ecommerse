@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -18,7 +18,7 @@ export default function SearchResults() {
 
   useEffect(() => {
     setLoading(true);
-    api.getProducts(currentQuery)
+    api.getProducts({ search: currentQuery })
       .then((data) => {
         setProducts(data);
         setError(null);

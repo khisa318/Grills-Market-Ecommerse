@@ -113,6 +113,33 @@ class OrderStatusLog(db.Model):
     notes = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+class PaymentTransaction(db.Model):
+    __tablename__ = 'payment_transactions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    reference = db.Column(db.String(80), unique=True, nullable=False, index=True)
+    provider = db.Column(db.String(50), default='payhero', nullable=False)
+    provider_reference = db.Column(db.String(255), nullable=True, index=True)
+    checkout_request_id = db.Column(db.String(255), nullable=True, index=True)
+
+    customer_name = db.Column(db.String(255), nullable=False)
+    customer_email = db.Column(db.String(120), nullable=False, index=True)
+    customer_phone = db.Column(db.String(30), nullable=False)
+    shipping_address = db.Column(db.Text, nullable=False)
+
+    subtotal = db.Column(db.Float, nullable=False)
+    tax = db.Column(db.Float, default=0)
+    shipping = db.Column(db.Float, default=0)
+    total_amount = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(10), default='KES', nullable=False)
+
+    status = db.Column(db.String(50), default='pending', nullable=False, index=True)
+    items = db.Column(db.Text, nullable=False)  # JSON string
+    provider_payload = db.Column(db.Text, nullable=True)  # JSON string
+    provider_response = db.Column(db.Text, nullable=True)  # JSON string
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 class Review(db.Model):
     __tablename__ = 'reviews'
     
